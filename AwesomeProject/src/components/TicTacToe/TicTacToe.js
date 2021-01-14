@@ -1,9 +1,10 @@
-import React, {useState} from 'react';
-import {View, Text, StyleSheet, Image} from 'react-native';
+import React, {useState, useRef} from 'react';
+import {View, Text, StyleSheet, Image, Animated} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 
 import {players} from './constants';
 import GameBoard from './GameBoard';
+import SettingsComp from './SettingsComp';
 import backIcon from '../../image/back-button.png';
 import settingsIcon from '../../image/settings.png';
 
@@ -34,6 +35,8 @@ const Item = ({item, onPress}) => {
   );
 };
 
+const animationDuration = 200;
+
 const TicTacToe = ({navigation}) => {
   const [currentPlayer, setCurrentPlayer] = useState(players.player1);
   const [nextMoveText, setNextMoveText] = useState(players.player1.name);
@@ -43,6 +46,25 @@ const TicTacToe = ({navigation}) => {
     ['', '', ''],
   ]);
   const [gameStatus, setGameStatus] = useState('Please start the game!');
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  const rotateSettingButtonAnim = useRef(new Animated.Value(0)).current;
+
+  const rotateRight = () => {
+    Animated.timing(rotateSettingButtonAnim, {
+      toValue: 0,
+      duration: animationDuration,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const rotateLeft = () => {
+    Animated.timing(rotateSettingButtonAnim, {
+      toValue: 1,
+      duration: animationDuration,
+      useNativeDriver: true,
+    }).start();
+  };
 
   const toolButtonsData = [
     {
@@ -90,6 +112,16 @@ const TicTacToe = ({navigation}) => {
       },
     },
   ];
+
+  function openSettingsComp() {
+    rotateLeft();
+    setIsSettingsOpen(true);
+  }
+
+  function closeSettingsComp() {
+    rotateRight();
+    setIsSettingsOpen(false);
+  }
 
   function initializeGameState() {
     gameStack.splice(0, gameStack.length);
@@ -234,11 +266,25 @@ const TicTacToe = ({navigation}) => {
           </TouchableOpacity>
         </View>
         <Text style={styles.textH2}>{` Tic Tac Toe `}</Text>
-        <View style={styles.settingsButton}>
-          <TouchableOpacity>
+        <Animated.View
+          // useNativeDriver={false}
+          style={[
+            styles.settingsButton,
+            {
+              transform: [
+                {
+                  rotate: rotateSettingButtonAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ['0deg', '90deg'],
+                  }),
+                },
+              ],
+            },
+          ]}>
+          <TouchableOpacity onPress={openSettingsComp}>
             <Image source={settingsIcon} style={styles.headerIconStyle} />
           </TouchableOpacity>
-        </View>
+        </Animated.View>
       </View>
       <View style={styles.body}>
         <View style={styles.btnGrp}>
@@ -261,13 +307,16 @@ const TicTacToe = ({navigation}) => {
           </View>
         </View>
       </View>
+      {isSettingsOpen && (
+        <SettingsComp open={isSettingsOpen} onClose={closeSettingsComp} />
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
+    paddingHorizontal: 10,
     flex: 1,
     backgroundColor: '#fff',
   },
@@ -276,6 +325,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     marginHorizontal: 5,
     flexDirection: 'row',
+    alignItems: 'center',
   },
   backButton: {
     width: '9.5%',
