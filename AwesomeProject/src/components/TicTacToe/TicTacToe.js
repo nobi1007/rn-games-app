@@ -113,16 +113,16 @@ function TicTacToe({navigation}) {
     },
   ];
 
-  const invertPlayer = (currentPlayer, gameStatus) => {
+  const invertPlayer = (playerToInvert, currentGameStatus) => {
     if (
-      gameStatus.split(' ').indexOf('wins.') !== -1 ||
+      currentGameStatus.split(' ').indexOf('wins.') !== -1 ||
       gameStack.length >= 9
     ) {
       setNextMoveText('No one, as game is over.');
-    } else if (currentPlayer.index === 0) {
+    } else if (playerToInvert.index === 0) {
       setCurrentPlayer(players.player2);
       setNextMoveText(players.player2.name);
-    } else if (currentPlayer.index === 1) {
+    } else if (playerToInvert.index === 1) {
       setCurrentPlayer(players.player1);
       setNextMoveText(players.player1.name);
     }
