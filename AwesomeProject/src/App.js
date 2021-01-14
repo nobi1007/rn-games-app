@@ -3,7 +3,6 @@ import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 
-// import LaughTraslator from './components/LaughTraslator';
 import Home from './components/Home';
 import TicTacToe from './components/TicTacToe';
 
