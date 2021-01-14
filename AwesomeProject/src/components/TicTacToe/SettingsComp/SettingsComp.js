@@ -1,12 +1,14 @@
 import React from 'react';
+import {TextInput} from 'react-native';
 import {
   View,
   Text,
   StyleSheet,
   Modal,
   TouchableWithoutFeedback,
-  ScrollView,
 } from 'react-native';
+
+import {Button} from 'react-native-elements';
 
 import * as Animatable from 'react-native-animatable';
 import {useState} from 'react/cjs/react.development';
@@ -26,8 +28,17 @@ const slideOutAnimation = {
 
 const animationDuration = 200;
 
-const SettingsComp = ({open, onClose}) => {
+const SettingsComp = ({players, open, onClose, updatePlayersInfo}) => {
   const [animationType, setAnimationType] = useState(slideInAnimation);
+  const [p1, setP1] = useState(players.player1.name);
+  const [p2, setP2] = useState(players.player2.name);
+
+  const handleP1Change = (name) => {
+    setP1(name);
+  };
+  const handleP2Change = (name) => {
+    setP2(name);
+  };
 
   const hideModal = () => {
     setAnimationType(slideOutAnimation);
@@ -35,6 +46,10 @@ const SettingsComp = ({open, onClose}) => {
       onClose();
       clearTimeout(timer);
     }, animationDuration - 100);
+  };
+
+  const handleSettingsOnSave = () => {
+    updatePlayersInfo(p1, p2);
   };
 
   return (
@@ -59,7 +74,30 @@ const SettingsComp = ({open, onClose}) => {
                 <Text style={styles.settingsHeaderText}>Settings</Text>
               </View>
               <View style={styles.settingsBody}>
-                <Text>All settings starts here</Text>
+                <View style={styles.eachRow}>
+                  <Text style={styles.eachRowKey}>{`Player 1:`}</Text>
+                  <TextInput
+                    placeholder={players.player1.name}
+                    onChange={(e) => handleP1Change(e.nativeEvent.text)}
+                    style={styles.eachRowVal}
+                  />
+                </View>
+                <View style={styles.eachRow}>
+                  <Text style={styles.eachRowKey}>{`Player 2:`}</Text>
+                  <TextInput
+                    placeholder={players.player2.name}
+                    onChange={(e) => handleP2Change(e.nativeEvent.text)}
+                    style={styles.eachRowVal}
+                  />
+                </View>
+                <View style={styles.saveButton}>
+                  <Button
+                    title={'Save'}
+                    type={'solid'}
+                    raised
+                    onPress={handleSettingsOnSave}
+                  />
+                </View>
               </View>
             </View>
           </AnimatableTouchableWithoutFeedback>
@@ -96,6 +134,29 @@ const styles = StyleSheet.create({
   },
   settingsBody: {
     flex: 1,
+    padding: 20,
+  },
+  eachRow: {
+    display: 'flex',
+    flexDirection: 'row',
+    marginVertical: 5,
+  },
+  eachRowKey: {
+    flex: 1,
+    fontSize: 16,
+    textAlignVertical: 'center',
+    textAlign: 'center',
+  },
+  eachRowVal: {
+    flex: 3,
+    fontSize: 16,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 5,
+    paddingHorizontal: 12,
+  },
+  saveButton: {
+    marginVertical: 20,
   },
 });
 

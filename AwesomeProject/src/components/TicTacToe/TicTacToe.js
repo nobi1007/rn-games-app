@@ -1,8 +1,15 @@
 import React, {useState, useRef} from 'react';
-import {View, Text, StyleSheet, Image, Animated} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  Animated,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 
-import {players} from './constants';
 import GameBoard from './GameBoard';
 import SettingsComp from './SettingsComp';
 import backIcon from '../../image/back-button.png';
@@ -38,8 +45,19 @@ const Item = ({item, onPress}) => {
 const animationDuration = 200;
 
 const TicTacToe = ({navigation}) => {
-  const [currentPlayer, setCurrentPlayer] = useState(players.player1);
-  const [nextMoveText, setNextMoveText] = useState(players.player1.name);
+  const [player1, setPlayer1] = useState({
+    index: 0,
+    name: 'Player 1',
+    marker: 'X',
+  });
+  const [player2, setPlayer2] = useState({
+    index: 1,
+    name: 'Player 2',
+    marker: 'O',
+  });
+
+  const [currentPlayer, setCurrentPlayer] = useState(player1);
+
   const [gameBoardMatrix, setGameBoardMatrix] = useState([
     ['', '', ''],
     ['', '', ''],
@@ -47,6 +65,22 @@ const TicTacToe = ({navigation}) => {
   ]);
   const [gameStatus, setGameStatus] = useState('Please start the game!');
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  const updatePlayers = (p1, p2) => {
+    let dummyPlayer1 = {...player1};
+    let dummyPlayer2 = {...player2};
+    if (p1.length > 0) {
+      dummyPlayer1.name = p1;
+      setPlayer1(dummyPlayer1);
+    }
+    if (p2.length > 0) {
+      dummyPlayer2.name = p2;
+      setPlayer2(dummyPlayer2);
+    }
+    const dummyCurrentPlayer = {...currentPlayer};
+    setCurrentPlayer(dummyCurrentPlayer);
+    closeSettingsComp();
+  };
 
   const rotateSettingButtonAnim = useRef(new Animated.Value(0)).current;
 
@@ -105,7 +139,6 @@ const TicTacToe = ({navigation}) => {
             currentGameStatus = `${winPlayer.name} wins.`;
           }
           setCurrentPlayer(lastPlayer);
-          setNextMoveText(lastPlayer.name);
           setGameStatus(currentGameStatus);
           setGameBoardMatrix(updatedGameBoard);
         }
@@ -137,8 +170,8 @@ const TicTacToe = ({navigation}) => {
       [0, 0],
       [0, 0],
     ];
-    setCurrentPlayer(players.player1);
-    setNextMoveText(players.player1.name);
+    setCurrentPlayer(player1);
+
     setGameBoardMatrix([
       ['', '', ''],
       ['', '', ''],
@@ -157,13 +190,10 @@ const TicTacToe = ({navigation}) => {
       currentGameStatus.split(' ').indexOf('wins.') !== -1 ||
       gameStack.length >= 9
     ) {
-      setNextMoveText('No one, as game is over.');
     } else if (playerToInvert.index === 0) {
-      setCurrentPlayer(players.player2);
-      setNextMoveText(players.player2.name);
+      setCurrentPlayer(player2);
     } else if (playerToInvert.index === 1) {
-      setCurrentPlayer(players.player1);
-      setNextMoveText(players.player1.name);
+      setCurrentPlayer(player1);
     }
   };
 
@@ -179,7 +209,7 @@ const TicTacToe = ({navigation}) => {
         const diagWise = compDiags[player].indexOf(3);
 
         if (rowWise !== -1 || colWise !== -1 || diagWise !== -1) {
-          winPlayer = player === 0 ? players.player1 : players.player2;
+          winPlayer = player === 0 ? player1 : player2;
           if (rowWise !== -1) {
             winDirection = 100;
             winIndex = rowWise;
@@ -258,7 +288,9 @@ const TicTacToe = ({navigation}) => {
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <View style={styles.header}>
         <View style={styles.backButton}>
           <TouchableOpacity onPress={handleBackButtonClick}>
@@ -267,7 +299,6 @@ const TicTacToe = ({navigation}) => {
         </View>
         <Text style={styles.textH2}>{` Tic Tac Toe `}</Text>
         <Animated.View
-          // useNativeDriver={false}
           style={[
             styles.settingsButton,
             {
@@ -299,7 +330,12 @@ const TicTacToe = ({navigation}) => {
         <View style={styles.gameFooter}>
           <View style={styles.statsRow}>
             <Text style={styles.textStatsKey}>{`Move of: `}</Text>
-            <Text style={styles.textStatsVal}>{nextMoveText}</Text>
+            <Text style={styles.textStatsVal}>
+              {gameStatus.split(' ').indexOf('win.') !== -1 ||
+              gameStack.length >= 9
+                ? 'No one, as game is over.'
+                : currentPlayer.name}
+            </Text>
           </View>
           <View style={styles.statsRow}>
             <Text style={styles.textStatsKey}>{`Game Status: `}</Text>
@@ -308,9 +344,14 @@ const TicTacToe = ({navigation}) => {
         </View>
       </View>
       {isSettingsOpen && (
-        <SettingsComp open={isSettingsOpen} onClose={closeSettingsComp} />
+        <SettingsComp
+          open={isSettingsOpen}
+          onClose={closeSettingsComp}
+          players={{player1: player1, player2: player2}}
+          updatePlayersInfo={updatePlayers}
+        />
       )}
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -319,6 +360,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     flex: 1,
     backgroundColor: '#fff',
+    // position: 'absolute',
   },
   header: {
     flex: 1,
