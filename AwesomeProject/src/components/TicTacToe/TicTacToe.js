@@ -34,7 +34,7 @@ const Item = ({item, onPress}) => {
   );
 };
 
-function TicTacToe({navigation}) {
+const TicTacToe = ({navigation}) => {
   const [currentPlayer, setCurrentPlayer] = useState(players.player1);
   const [nextMoveText, setNextMoveText] = useState(players.player1.name);
   const [gameBoardMatrix, setGameBoardMatrix] = useState([
@@ -48,29 +48,7 @@ function TicTacToe({navigation}) {
     {
       id: 1,
       title: 'RESET',
-      onPressHandler: function () {
-        gameStack.splice(0, gameStack.length);
-        compRow = [
-          [0, 0, 0],
-          [0, 0, 0],
-        ];
-        compCol = [
-          [0, 0, 0],
-          [0, 0, 0],
-        ];
-        compDiags = [
-          [0, 0],
-          [0, 0],
-        ];
-        setCurrentPlayer(players.player1);
-        setNextMoveText(players.player1.name);
-        setGameBoardMatrix([
-          ['', '', ''],
-          ['', '', ''],
-          ['', '', ''],
-        ]);
-        setGameStatus('Please start the game!');
-      },
+      onPressHandler: initializeGameState,
     },
     {
       id: 2,
@@ -112,6 +90,35 @@ function TicTacToe({navigation}) {
       },
     },
   ];
+
+  function initializeGameState() {
+    gameStack.splice(0, gameStack.length);
+    compRow = [
+      [0, 0, 0],
+      [0, 0, 0],
+    ];
+    compCol = [
+      [0, 0, 0],
+      [0, 0, 0],
+    ];
+    compDiags = [
+      [0, 0],
+      [0, 0],
+    ];
+    setCurrentPlayer(players.player1);
+    setNextMoveText(players.player1.name);
+    setGameBoardMatrix([
+      ['', '', ''],
+      ['', '', ''],
+      ['', '', ''],
+    ]);
+    setGameStatus('Please start the game!');
+  }
+
+  const handleBackButtonClick = () => {
+    initializeGameState();
+    navigation.goBack();
+  };
 
   const invertPlayer = (playerToInvert, currentGameStatus) => {
     if (
@@ -222,7 +229,7 @@ function TicTacToe({navigation}) {
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.backButton}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          <TouchableOpacity onPress={handleBackButtonClick}>
             <Image source={backIcon} style={styles.headerIconStyle} />
           </TouchableOpacity>
         </View>
@@ -256,7 +263,7 @@ function TicTacToe({navigation}) {
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
