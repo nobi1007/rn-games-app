@@ -221,15 +221,23 @@ function TicTacToe({navigation}) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}>
-          <Image source={backIcon} style={{width: 36, height: 36}} />
-        </TouchableOpacity>
-        <Text style={styles.textH2}>- Tic Tac Toe -</Text>
-        <TouchableOpacity style={styles.settingsButton}>
-          <Image source={settingsIcon} style={{width: 36, height: 36}} />
-        </TouchableOpacity>
+        <View style={styles.backButton}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Image
+              source={backIcon}
+              style={{resizeMode: 'contain', height: '100%', width: '100%'}}
+            />
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.textH2}>{` Tic Tac Toe `}</Text>
+        <View style={styles.settingsButton}>
+          <TouchableOpacity>
+            <Image
+              source={settingsIcon}
+              style={{resizeMode: 'contain', height: '100%', width: '100%'}}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
       <View style={styles.body}>
         <View style={styles.btnGrp}>
@@ -264,24 +272,23 @@ const styles = StyleSheet.create({
   },
   header: {
     flex: 1,
-    paddingVertical: 10,
-    marginHorizontal: 10,
     display: 'flex',
+    marginHorizontal: 5,
     flexDirection: 'row',
   },
   backButton: {
-    width: 36,
-    height: 36,
+    width: '9.5%',
+    height: '55%',
   },
   settingsButton: {
-    width: 36,
-    height: 36,
+    width: '9.5%',
+    height: '55%',
   },
   textH2: {
     textAlign: 'center',
-    textAlignVertical: 'center',
     fontSize: 38,
     flex: 1,
+    color: '#444',
   },
   body: {
     margin: 10,
