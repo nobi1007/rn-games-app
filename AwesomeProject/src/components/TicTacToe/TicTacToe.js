@@ -223,19 +223,13 @@ function TicTacToe({navigation}) {
       <View style={styles.header}>
         <View style={styles.backButton}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Image
-              source={backIcon}
-              style={{resizeMode: 'contain', height: '100%', width: '100%'}}
-            />
+            <Image source={backIcon} style={styles.headerIconStyle} />
           </TouchableOpacity>
         </View>
         <Text style={styles.textH2}>{` Tic Tac Toe `}</Text>
         <View style={styles.settingsButton}>
           <TouchableOpacity>
-            <Image
-              source={settingsIcon}
-              style={{resizeMode: 'contain', height: '100%', width: '100%'}}
-            />
+            <Image source={settingsIcon} style={styles.headerIconStyle} />
           </TouchableOpacity>
         </View>
       </View>
@@ -283,6 +277,11 @@ const styles = StyleSheet.create({
   settingsButton: {
     width: '9.5%',
     height: '55%',
+  },
+  headerIconStyle: {
+    resizeMode: 'contain',
+    height: '100%',
+    width: '100%',
   },
   textH2: {
     textAlign: 'center',
